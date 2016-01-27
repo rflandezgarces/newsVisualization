@@ -10,7 +10,7 @@ def query_elastic(string):
     es = Elasticsearch()
     res = es.search(index="documents_analyzed", doc_type="articles", body={"query": {"match": {"_all": string}}})
     tamano=res['hits']['total']
-    res = es.search(index="documents_analyzed", doc_type="articles", body={"size" : tamano,"query": {"match": {"_all": string}}})
+    res = es.search(index="documents_analyzed", doc_type="articles", body={"size" : tamano,"query": {"match": {"_all": string}},"sort": { "date": { "order": "desc" }}})
     res['hits']['hits']#este es un json con los datos de 0 a n
     return res['hits']['hits']
 

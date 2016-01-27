@@ -12,9 +12,10 @@
         <link href="https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css" rel='stylesheet' />
         <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css" rel='stylesheet' />
         <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css" rel='stylesheet' />
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/leaflet.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/thumbnailGallery.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/dc.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/map.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/jqcloud.css')}}" />
 
@@ -56,6 +57,7 @@
 <!---------------------------------------------------------------------------------------------------->
     <div class="container">
         <div class="row">
+        {% set id=0 %}
         {% for i in news %}
             <div class="col-lg-4 col-md-4 col-xs-6 thumb">
                 <div class="thumbnail">
@@ -63,26 +65,59 @@
                     <p class="newsTopic">{{i._source.topic}}</p>
                     <img class="img-responsive" src="http://lorempixel.com/400/200/" alt="">
                     <p class="newsMedia">{{i._source.screen_name}}</p>                    
-                    <a><p class="capitalize">{{i._source.title}}</p></a>   
+                    <a id={{id}} onclick="$('#myModal').modal('show')"><p class="capitalize">{{i._source.title}}</p></a>   
                 </div> 
             </div>
+            {% set id=id+1 %}
         {% endfor %}
+        </div>
+    </div>
+<!---------------------------------------------------------------------------------------------------->
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
         </div>
     </div>
 <!---------------------------------------------------------------------------------------------------->    <div class="map" id="map">
         <script type="text/javascript">var newsMap=({{news|tojson|safe}});</script>
     </div>
 <!---------------------------------------------------------------------------------------------------->
-    <div class="wordCloud"></div>
+    <!-- <div class="wordCloud"></div> -->
+<!---------------------------------------------------------------------------------------------------->
+    <div id="charts">
+      <div id="val-chart" class="chart">
+        <div class="title">Value 1</div>
+      </div>
+      <div id="val2-chart" class="chart">
+        <div class="title">Value 2</div>
+      </div>
+    </div>
 <!---------------------------------------------------------------------------------------------------->
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="{{url_for('static',filename='js/jquery-1.11.3.min.js')}}"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
-
-        <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-        <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
-        <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.-10/leaflet.markercluster.js'></script>
+        <script src="{{url_for('static',filename='js/leaflet.js')}}"></script>
+        <script src="{{url_for('static',filename='js/mapbox.js')}}"></script>
+        <script src="{{url_for('static',filename='js/leaflet.markercluster.js')}}"></script>
+        <script src="{{url_for('static',filename='js/d3.js')}}"></script>
+        <script src="{{url_for('static',filename='js/crossfilter.js')}}"></script>
+        <script src="{{url_for('static',filename='js/dc.js')}}"></script>
+        <script src="{{url_for('static',filename='js/chart.js')}}"></script>
+        <script src="{{url_for('static',filename='js/setup.js')}}"></script>
         <script src="{{url_for('static',filename='js/jqcloud.js')}}"></script>
         <script src="{{url_for('static',filename='js/wordCloud.js')}}"></script>
         <script src="{{url_for('static',filename='js/createMap.js')}}"></script>

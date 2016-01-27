@@ -2,8 +2,8 @@
 	float:right;/*para que quede al lado de la galeria*/
     padding:0;
     max-height: 50% !important;
-    width: 40%;
+    width: 35%;
     height: 40%;
     margin-top: 1%;/*igual que la galeria*/
-    margin-right: 2.3%;/*igual que la galeria pero a la derecha*/
+    margin-right: 5%;/*igual que la galeria pero a la derecha*/
 }

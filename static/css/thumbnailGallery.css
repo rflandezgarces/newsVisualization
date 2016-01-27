@@ -6,9 +6,9 @@
   max-height: 75%;
   display: block;
   margin-top: 1%;
-  margin-left: 2.3%;
+  margin-left: 5%;
   padding: 0;
-  border: 1px solid #DCDCDC;
+  /*border: 1px solid #DCDCDC;*/
  }
 
 .thumb {
@@ -38,6 +38,7 @@ p.capitalize:first-letter {
     margin-top: 5%;
     margin-left: 5%;
     margin-bottom: -15%;/*separacion entre filas de thumbnails*/
+    padding-right: 0;
 }
 .thumbnail img{
     width: 230px;
