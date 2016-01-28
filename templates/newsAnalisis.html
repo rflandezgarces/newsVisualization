@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="{{url_for('static',filename='css/dc.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/map.css')}}" />
         <link rel="stylesheet" href="{{url_for('static',filename='css/jqcloud.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/chart.css')}}" />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -101,9 +102,6 @@
       <div id="val-chart" class="chart">
         <div class="title">Value 1</div>
       </div>
-      <div id="val2-chart" class="chart">
-        <div class="title">Value 2</div>
-      </div>
     </div>
 <!---------------------------------------------------------------------------------------------------->
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -113,15 +111,17 @@
         <script src="{{url_for('static',filename='js/leaflet.js')}}"></script>
         <script src="{{url_for('static',filename='js/mapbox.js')}}"></script>
         <script src="{{url_for('static',filename='js/leaflet.markercluster.js')}}"></script>
-        <script src="{{url_for('static',filename='js/d3.js')}}"></script>
-        <script src="{{url_for('static',filename='js/crossfilter.js')}}"></script>
-        <script src="{{url_for('static',filename='js/dc.js')}}"></script>
-        <script src="{{url_for('static',filename='js/chart.js')}}"></script>
-        <script src="{{url_for('static',filename='js/setup.js')}}"></script>
+        <script src="{{url_for('static',filename='js/d3.v3.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/crossfilter.v1.min.js')}}"></script>
         <script src="{{url_for('static',filename='js/jqcloud.js')}}"></script>
         <script src="{{url_for('static',filename='js/wordCloud.js')}}"></script>
         <script src="{{url_for('static',filename='js/createMap.js')}}"></script>
-        <script src="{{url_for('static',filename='js/timeline.js')}}"></script>
+        <script src="{{url_for('static',filename='js/chart.js')}}"></script>
+        <script src="{{url_for('static',filename='js/data.js')}}"></script>
+        <script src="{{url_for('static',filename='js/timelineSetup.js')}}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', init, false);
+        </script>
     </body>
 <!---------------------------------------------------------------------------------------------------->
 </html>
