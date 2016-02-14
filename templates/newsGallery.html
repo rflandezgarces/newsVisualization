@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>NewsEvents.CL</title>
+
+        <!-- Bootstrap -->
+        <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css" rel='stylesheet' />
+        <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css" rel='stylesheet' />
+        <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css" rel='stylesheet' />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/leaflet.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/jqcloud.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static',filename='css/myStyle.css')}}" />
+        <script>
+            var modal=function(news){
+                $("#myModalLabel").html(news.title);
+                $(".modal-body").html(news.article_text);
+
+                console.log(news);
+            }
+        </script>
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+    </head>
+<!---------------------------------------------------------------------------------------------------->
+    <body>
+        <div>
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="{{ url_for('show_index_post') }}">&nbsp&nbsp&nbspEvents Map</a>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </nav>
+        </div>
+<!---------------------------------------------------------------------------------------------------->
+    <div class="container">
+        <div class="row">
+        {% set id=0 %}
+        {% for i in news %}
+            <div class="col-lg-4 col-md-4 col-xs-6 thumb">
+                <div class="thumbnail" id={{id}} onclick='$("#myModal").modal("show");modal({{news[id]._source|tojson|safe}});'>
+                    <p class="newsDate">{{i._source.date}}</p>
+                    <p class="newsTopic">{{i._source.topic}}</p>
+                    <img class="img-responsive" src="http://lorempixel.com/400/200/" alt="">
+                    <p class="newsMedia">{{i._source.screen_name}}</p>                    
+                    <p class="capitalize">{{i._source.title}}</p>  
+                </div> 
+            </div>
+            {% set id=id+1 %}
+        {% endfor %}
+        </div>
+    </div>
+<!---------------------------------------------------------------------------------------------------->
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!---------------------------------------------------------------------------------------------------->
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="{{url_for('static',filename='js/jquery-1.11.3.min.js')}}"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/leaflet.js')}}"></script>
+        <script src="{{url_for('static',filename='js/mapbox.js')}}"></script>
+        <script src="{{url_for('static',filename='js/leaflet.markercluster.js')}}"></script>
+        <script src="{{url_for('static',filename='js/d3.v3.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/crossfilter.v1.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/jqcloud.js')}}"></script>
+        <script src="{{url_for('static',filename='js/myFunctions.js')}}"></script>
+    </body>
+<!---------------------------------------------------------------------------------------------------->
+</html>
