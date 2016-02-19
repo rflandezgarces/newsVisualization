@@ -31,7 +31,7 @@ def show_index():
 
 @app.route('/newsGallery/')
 def show_news():
-    return render_template('newsGallery.html', news=news)#nombre para html = nombre en python
+    return render_template('newsGallery.html', news=news, busqueda=term)#nombre para html = nombre en python
 
 @app.route('/', methods=['POST'])
 def show_index_post():
