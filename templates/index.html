@@ -51,64 +51,23 @@
             </nav>
         </div>
 <!---------------------------------------------------------------------------------------------------->
-        <div id="searchIndicator">{{busqueda}}</div>
+        <div id="searchIndicator">{{'"'+busqueda+'"'}}<text id="dateIndic"></text></div>
 <!---------------------------------------------------------------------------------------------------->
         <div class="map" id="map">
             <script type="text/javascript">var newsMap=({{news|tojson|safe}});</script>
         </div>
 <!---------------------------------------------------------------------------------------------------->
         <div class="infoPanel">
-<!--             <div class="row">
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <button type="button" class="btn btn-danger">
-                        <p >Noticias Encontradas</p>
-                        <p >{{news|length}}</p> 
-                    </button>
-                </div>
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <button type="button" class="btn btn-info">
-                        <p >Noticias Encontradas</p>
-                        <p >{{news|length}}</p> 
-                    </button>
-                </div>
-            </div> 
-        <a href="{{ url_for('show_news') }}">
-            <div class="widgetNews">
-                <div class="widgetTitle">Noticias Relacionadas</div>
-                <div class="widgetInfo">{{news|length}}</div> 
-                <!-- <div class="widgetIcon1">
-                    <img id="icon" src="{{url_for('static',filename='icons/news.svg')}}">
-                </div> -->      
-            <!-- </div>
-        </a>
-        <a href="">
-            <div class="widgetMedia">
-                    <div class="widgetTitle">Fuentes de Noticias</div>
-                    <div class="widgetInfo">{{news|length}}</div>
-                    <!-- <div class="widgetIcon2">
-                    <img id="icon" src="{{url_for('static',filename='icons/media.svg')}}">
-                </div>   --> 
-         <!--    </div>       
-        </a> -->
-        <a href="{{ url_for('show_news') }}">
-            <div class="col-md-6 col-sm-3">
-                <div class="widgetNews">
-                    <div class="widgetInfo">
-                        <h5>Noticias Relacionadas</h5>
-                        <p>{{news|length}}</p>      
-                    </div>
-                </div>
-            </div>
-        </a>
-        <div class="col-md-6 col-sm-3">
-            <div class="widgetMedia">
-                <!-- <div class="stats-icon"><i class="fa fa-desktop"></i></div> -->
-                <div class="widgetInfo">
-                    <h5>Fuentes de Noticias</h5>
-                    <p>3,291,922</p>    
-                </div>
-            </div>
-        </div>
+            <a href="{{ url_for('show_news') }}">
+                <button type="button" class="btn btn-danger col-lg-12 col-md-12 col-xs-12 widgetNews">
+                    <h5 style="vertical-align: middle;">Noticias Relacionadas</h5>
+                    <h1 id="numNews" style="vertical-align: middle;"><center>{{news|length}}</center></h1>
+                </button>
+            </a>
+            <button type="button" class="btn btn-info col-lg-12 col-md-12 col-xs-12 widgetMedia">
+                <h5 style="vertical-align: middle;">Fuentes de Noticias</h5>
+                <h1 id="numMedia" style="vertical-align: middle;"><center></center></h1>
+            </button>
         </div>
 <!---------------------------------------------------------------------------------------------------->
     <!-- <div class="chart">

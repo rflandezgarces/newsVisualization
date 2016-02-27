@@ -28,48 +28,29 @@ var createMap=function(news){
 
 createMap(newsMap);
 /*------------------MouseOver Widgets----------------------------------------------------------------*/
-var c=0;
-var c2=0;
-var c3=0;
 $( ".widgetNews" ).mouseenter(function() {
-   if(c==0){
-    htmlWidget=$( ".widgetNews" ).html();
-   }
-   $(this).css("background","#8B0000");
-   $(this).css( "cursor", "pointer");
-   $(this).html("<p>View Detail&nbsp<span class='glyphicon glyphicon-circle-arrow-right'></span></p>");
-   $("#vDetail1").hide();
-   $("#vDetail1").fadeIn("slow");
-   c=1;
+  htmlWidget=$( ".widgetNews" ).html();//obtengo el html actual del boton
+  height=$( ".widgetNews" ).height();//obtengo el alto del boton
+  $(this).css( "cursor", "pointer");//le cambio el cursor al pasar por encima
+  $(this).height(height);//le asigno el tamaño
+  $(this).html("<h2><center><span class='glyphicon glyphicon-search' aria-hidden='true'></span></center></h2>");
 });
-$( ".widgetNews" ).mouseleave(function() {
-   $(this).css("background","#DC143C");
-   $(this).html(htmlWidget);
-   //$(".widgetText1").hide();
-   //$(".widgetText1").fadeIn("slow");
-   //$(".widgetIcon1").hide();
-   //$(".widgetIcon1").fadeIn("slow");
 
+$( ".widgetNews" ).mouseleave(function() {
+   $(this).height(height);//le asigno el mismo tamaño
+   $(this).html(htmlWidget);//vuelvo al html antes de pasar por encima
  });
 
 $( ".widgetMedia" ).mouseenter(function() {
-   if(c2==0){
     htmlWidget2=$( ".widgetMedia" ).html();
-   }
-   $(this).css("background","#348fe2");
+    heightMedia=$( ".widgetNews" ).height();
    $(this).css( "cursor", "pointer");
-   $(this).html("<p>View Detail&nbsp<span class='glyphicon glyphicon-circle-arrow-right'></span></p>");
-   $("#vDetail2").hide();
-   $("#vDetail2").fadeIn("slow");
-   c2=1;   
+   $(this).height(heightMedia);
+   $(this).html("<h2><center><span class='glyphicon glyphicon-search' aria-hidden='true'></span></center></h2>");   
  });
 $( ".widgetMedia" ).mouseleave(function() {
-   $(this).css("background","#348fe2");
+   $(this).height(heightMedia);
    $(this).html(htmlWidget2);
-   //$(".widgetText2").hide();
-   //$(".widgetText2").fadeIn("slow");
-   //$(".widgetIcon2").hide();
-   //$(".widgetIcon2").fadeIn("slow");
  });
 /*$( ".map" ).mouseenter(function() {
    $(this).fadeTo("fast" , 0.6);
@@ -135,6 +116,10 @@ function initCrossfilter() {
   getDates();
   // initialize charts (helper function in chart.js)
   // taken directly from crossfilter's example
+
+  for(var i in dateDimension){
+    console.log(i);
+  }
   charts = [
     barChart()
       .dimension(dateDimension)
@@ -164,16 +149,51 @@ function updateCharts() {
 function updateMarkers() {
   markers.clearLayers();//borro todo del mapa
   var pointIds = idGrouping.all();//obtengo ids y values(1 o 0) para ver cual mostrar o no
+  numNews=0;//dira cuantas noticias estan seleccionadas desde la linea de tiempo
+  startSelecDate=-1;//guarda primera fecha seleccionada
+  finSelectDate=0;//guarda ultima fecha seleccionada
+  var lastIndex=0;//posicion de la ultima fecha +
   for(var i=0;i<newsMap.length;i++){
     var pointId = pointIds[i];
     //console.log(pointId);
     if(pointId.value > 0){
       var latLong=getLatLong(newsMap[i]._source.countrylocation);
+      numNews=numNews+1;
       marker = L.marker(new L.LatLng(latLong[0], latLong[1]));
       markers.addLayer(marker);
-    }   
+      
+      if(startSelecDate==-1){//guarda la primera ocurrencia de la fecha(fecha inicial)
+        startSelecDate=i;
+      }
+      lastIndex=i;//guarda la ultima ocurrecia de la fecha(fecha final)
+    }  
   }
+  finSelecDate=lastIndex;
   map.addLayer(markers);
+}
+
+function updateWidgets(){
+  newsSelected=newsMap.slice(startSelecDate,finSelecDate);//corta el arreglo de noticias para solo obtener las seleccionadas por la linea de tiempo
+  initCrossfilterNumMedia(newsSelected);//cuenta los medios involucrados
+  $( "#numNews" ).html(numNews);//actualiza el numero de noticias relacionadas del widget
+  $( "#numMedia" ).html(mediaNumDimensionGrouping.length);//actualiza el numero de medios Relacionados del widget
+}
+
+function updateDates(){
+   var fechaFin=String(format.parse(newsMap[startSelecDate]._source.date.substr(0,10)));
+   var fechaIni=String(format.parse(newsMap[finSelecDate]._source.date.substr(0,10)));
+   if(fechaFin==fechaIni){//si es que es un solo dia
+      var dateIndic=" ("+fechaIni.substr(0,10)+")"
+      $( "#dateIndic" ).html(dateIndic);
+   }else{//si es que es un rango de fecha
+    var dateIndic=" ("+fechaIni.substr(0,10)+" - "+fechaFin.substr(0,10)+")";
+      $( "#dateIndic" ).html(dateIndic);
+   }
+  var date=startSelecDate+"-"+finSelecDate;
+   $.getJSON('/dateRange', {
+      fecha:date,
+      dateIndic:dateIndic,
+   });
 }
 
 // Whenever the brush moves, re-render charts and map markers
@@ -181,6 +201,8 @@ function renderAll() {
   //var pointIds = dateDimensionGrouping.all();
   //console.log(pointIds);
   updateMarkers();
+  updateDates();
+  updateWidgets();
   updateCharts();
 }
 
@@ -254,7 +276,7 @@ function makeWordCloud(news){
   var words=[];
   var keywords=news.keywords;//obtengo las keywords
   for (var i in keywords) {
-  var word={text: keywords[i].keyword, weight: keywords[i].relevancy};
+    var word={text: keywords[i].keyword, weight: keywords[i].relevancy};
     words[i]=word;
   }
   $("#word").empty();
@@ -297,3 +319,63 @@ function modal(news){
     $(this).off('shown.bs.modal');
   })
 }
+/*------------------stacked bar chart----------------------------------------------------------------------*/
+/*cuenta cuantas noticias por medio se realizan al dia*/
+function initCrossfilterMedia() {
+  filterMedia = crossfilter(newsMap);
+
+  // simple dimensions and groupings for major variables
+  mediaDimension = filterMedia.dimension(
+      function(p) {
+        //var data={date:format.parse(p._source.date.substr(0,10)),mediaSource:p._source.screen_name};
+        return "date="+format.parse(p._source.date.substr(0,10))+";mediaSource="+p._source.screen_name;
+      });
+  mediaDimensionGrouping = mediaDimension.group().reduceCount(
+      function(p) {
+        return p;
+      }).all();
+}
+initCrossfilterMedia();
+
+/*cuenta cuantos medios estan involucrados en la noticia*/
+function initCrossfilterNumMedia(news) {
+  filterMedia = crossfilter(news);
+
+  // simple dimensions and groupings for major variables
+  mediaNumDimension = filterMedia.dimension(
+      function(p) {
+        return p._source.screen_name;
+      });
+  mediaNumDimensionGrouping = mediaNumDimension.group().reduceCount(
+      function(p) {
+        return p;
+      }).all();
+}
+//initCrossfilterNumMedia(newsSelected);
+
+/*
+var cf = crossfilter([
+{ date:"1 jan 2014", author: "Mr X", book: "Book 1" },
+{ date:"2 jan 2014", author: "Mr X", book: "Book 2" },
+{ date:"3 feb 2014", author: "Mr X", book: "Book 3" },
+{ date:"1 mar 2014", author: "Mr X", book: "Book 4" },
+{ date:"2 apr 2014", author: "Mr X", book: "Book 5" },
+{ date:"3 apr 2014", author: "Mr X", book: "Book 6"},
+{ date:"1 jan 2014", author: "Ms Y", book: "Book 7" },
+{ date:"2 jan 2014", author: "Ms Y", book: "Book 8" },
+{ date:"3 jan 2014", author: "Ms Y", book: "Book 9" },
+{ date:"1 mar 2014", author: "Ms Y", book: "Book 10" },
+{ date:"2 mar 2014", author: "Ms Y", book: "Book 11" },
+{ date:"3 mar 2014", author: "Ms Y", book: "Book 12" },
+{ date:"4 apr 2014", author: "Ms Y", book: "Book 13" }
+]);  
+
+var dimensionMonthAuthor = cf.dimension(function (d) {
+  var thisDate = new Date(d.date);
+  return 'month='+thisDate.getMonth()+';author='+d.author;
+});
+
+
+var monthAuthorCount = dimensionMonthAuthor.group().reduceCount(function (d) { 
+  return d.book; }).all();
+*/

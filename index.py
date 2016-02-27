@@ -2,7 +2,7 @@
 from flask import Flask,render_template
 from elasticsearch import Elasticsearch
 from flask import request
-
+import json
 
 app = Flask(__name__)
 
@@ -25,13 +25,30 @@ def popular_term():
 
 popular_term()#ejecuto la funcion para llenar term y news al inicio
 
+def date_range():#selecciona solo las noticias del rango seleccionado en el timeline
+    fecha=str(request.args.get('fecha'))#obtiene el rango seleccionado en el timeline
+    global dateIndic
+    dateIndic=str(request.args.get('dateIndic'))#obtine la fecha del indicador superior
+    #manejo de cadenas para obtener los datos recibidos
+    pos=fecha.index('-')
+    l=len(fecha)
+    fechaInicio=int(fecha[0:pos])
+    fechaFinal=int(fecha[pos+1:l])
+    global selecNews#defino como global para que show_news() lo pueda ocupar
+    selecNews=news[fechaInicio:fechaFinal+1]#corto el arreglo de noticias segun lo seleccionado
+
 @app.route('/')
 def show_index():
+    #popular_term() #serviria para que no quede guardada la busqueda anterior al recargar
     return render_template('index.html', news=news,busqueda=term)#nombre para html = nombre en python
+
+@app.route('/dateRange/')
+def show_date():
+    date_range()#se ejecuta y crea las variables necesarias
 
 @app.route('/newsGallery/')
 def show_news():
-    return render_template('newsGallery.html', news=news, busqueda=term)#nombre para html = nombre en python
+    return render_template('newsGallery.html', news=selecNews, busqueda=term,dateIndic=dateIndic)#nombre para html = nombre en python
 
 @app.route('/', methods=['POST'])
 def show_index_post():
