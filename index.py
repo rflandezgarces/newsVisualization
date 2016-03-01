@@ -37,18 +37,27 @@ def date_range():#selecciona solo las noticias del rango seleccionado en el time
     global selecNews#defino como global para que show_news() lo pueda ocupar
     selecNews=news[fechaInicio:fechaFinal+1]#corto el arreglo de noticias segun lo seleccionado
 
-@app.route('/')
+@app.route('/')#pantalla de inicia que siempre muestra la busqueda definida por el servidor
 def show_index():
+    popular_term() #para que no quede guardada la busqueda anterior al re renderizar el template
+    return render_template('index.html', news=news,busqueda=term)#nombre para html = nombre en python
+
+@app.route('/home')#pantalla de inicia que muestra la busqueda del usuario
+def show_home():
     #popular_term() #serviria para que no quede guardada la busqueda anterior al recargar
     return render_template('index.html', news=news,busqueda=term)#nombre para html = nombre en python
 
 @app.route('/dateRange/')
-def show_date():
+def show_date():#recibe la actualizacion de las fechas seleccionadas por el usuario
     date_range()#se ejecuta y crea las variables necesarias
 
 @app.route('/newsGallery/')
 def show_news():
     return render_template('newsGallery.html', news=selecNews, busqueda=term,dateIndic=dateIndic)#nombre para html = nombre en python
+
+@app.route('/mediaInfo/')
+def show_media_info():
+    return render_template('mediaInfo.html', news=selecNews, busqueda=term,dateIndic=dateIndic)#nombre para html = nombre en python
 
 @app.route('/', methods=['POST'])
 def show_index_post():
@@ -57,7 +66,8 @@ def show_index_post():
     term = request.form['query']
     global news
     news=query_elastic(term)
-    return render_template('index.html', news=news, busqueda=term)#nombre para html = nombre en python
+    return show_home()
+    #return render_template('index.html', news=news, busqueda=term)#nombre para html = nombre en python
 
 
 if __name__ == "__main__":

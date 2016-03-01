@@ -21,6 +21,14 @@ html,body,.container-fluid{
   vertical-align: middle;
   line-height: 60px;/* the same as your div height */   
 }
+#homeIcon{
+  float:left;
+  margin-left:2%;
+  color:rgb(255,255,255);
+}
+#bs-example-navbar-collapse-1{
+  float:right;
+}
 /*------------------Map----------------------------------------------------------------*/
 .map{
 	float:left;
@@ -35,8 +43,34 @@ html,body,.container-fluid{
     height:40%;
     margin-top: 2%;
     margin-left: 10%;
+    z-index: 1;/*para que quede detras de #numLocations*/
+    position: absolute;
     /*margin-top: 7%;*/
     /*margin-left: 12%;*/
+}
+#numLocations{
+  /*propiedades del div sobre el mapa*/
+  background-color: rgb(47,79,79);
+  z-index: 2;/*para que quede sobre .map*/
+  position: absolute;
+  opacity: 0.8;
+  filter: alpha(opacity=80); /* For IE8 and earlier */
+
+  /*tamaño*/
+  margin-top: 1%;
+  width:40%;
+  height:10%;
+
+  /*propiedades del texto*/
+  text-align: center;
+  text-transform: capitalize;
+  vertical-align: middle;
+  line-height:29px;
+
+  color:rgb(255,255,255);/*color texto*/
+  font-family: sans-serif;
+  font-size: 18px;
+
 }
 /*------------------InfoPanel----------------------------------------------------------------*/
 .infoPanel{
@@ -286,4 +320,12 @@ span{/*dar estilo a cada letra de la nube de palabras de la imagen*/
 }
 .panel-heading {/*color del heading del panel*/
      background-color: #006dcc !important;
+}
+/*......................media info...............................*/
+#container{
+  cursor:pointer;
+  height: 85%;
+  //width:70%; 
+  width:80%;
+  margin: 0 auto;
 }

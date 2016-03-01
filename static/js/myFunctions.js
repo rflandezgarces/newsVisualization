@@ -1,4 +1,12 @@
 /*------------------create Map----------------------------------------------------------------*/
+/*$(window).bind('beforeunload',function(){
+  $.getJSON('/', {
+      isReloading:"True",
+   });
+  $.getJSON('/home', {
+      isReloading:"True",
+   });
+});*/
 var getLatLong=function(countryLoc){
     var l=countryLoc.length;
     var index=countryLoc.indexOf(",");
@@ -17,7 +25,11 @@ var createMap=function(news){
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    markers = new L.MarkerClusterGroup();
+    markers = new L.MarkerClusterGroup({
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: false
+    });
     for(var i=0;i<news.length;i++){
         var latLong=getLatLong(news[i]._source.countrylocation);
         marker = L.marker(new L.LatLng(latLong[0], latLong[1]));
@@ -25,11 +37,11 @@ var createMap=function(news){
     }
     map.addLayer(markers);
 };
-
 createMap(newsMap);
 /*------------------MouseOver Widgets----------------------------------------------------------------*/
+htmlWidgetNews='<h5 style="vertical-align: middle;">Noticias Relacionadas</h5><h1 id="numNews" style="vertical-align: middle;"><center></center></h1>'//html del boton
+htmlWidgetMedia='<h5 style="vertical-align: middle;">Fuentes de Noticias</h5><h1 id="numMedia" style="vertical-align: middle;"><center></center></h1>';
 $( ".widgetNews" ).mouseenter(function() {
-  htmlWidget=$( ".widgetNews" ).html();//obtengo el html actual del boton
   height=$( ".widgetNews" ).height();//obtengo el alto del boton
   $(this).css( "cursor", "pointer");//le cambio el cursor al pasar por encima
   $(this).height(height);//le asigno el tamaño
@@ -38,11 +50,11 @@ $( ".widgetNews" ).mouseenter(function() {
 
 $( ".widgetNews" ).mouseleave(function() {
    $(this).height(height);//le asigno el mismo tamaño
-   $(this).html(htmlWidget);//vuelvo al html antes de pasar por encima
+   $(this).html(htmlWidgetNews);//vuelvo al html antes de pasar por encima
+   $( "#numNews" ).html(numNews);//lo tomo desde la funcion del timeline para actualizar el num de noticias
  });
 
 $( ".widgetMedia" ).mouseenter(function() {
-    htmlWidget2=$( ".widgetMedia" ).html();
     heightMedia=$( ".widgetNews" ).height();
    $(this).css( "cursor", "pointer");
    $(this).height(heightMedia);
@@ -50,7 +62,8 @@ $( ".widgetMedia" ).mouseenter(function() {
  });
 $( ".widgetMedia" ).mouseleave(function() {
    $(this).height(heightMedia);
-   $(this).html(htmlWidget2);
+   $(this).html(htmlWidgetMedia);
+   $( "#numMedia" ).html(mediaNumDimensionGrouping.length);//lo tomo desde la funcion del timeline para actualizar el num de medios
  });
 /*$( ".map" ).mouseenter(function() {
    $(this).fadeTo("fast" , 0.6);
@@ -117,9 +130,6 @@ function initCrossfilter() {
   // initialize charts (helper function in chart.js)
   // taken directly from crossfilter's example
 
-  for(var i in dateDimension){
-    console.log(i);
-  }
   charts = [
     barChart()
       .dimension(dateDimension)
@@ -173,20 +183,23 @@ function updateMarkers() {
 }
 
 function updateWidgets(){
-  newsSelected=newsMap.slice(startSelecDate,finSelecDate);//corta el arreglo de noticias para solo obtener las seleccionadas por la linea de tiempo
+  newsSelected=newsMap.slice(startSelecDate,finSelecDate+1);//corta el arreglo de noticias para solo obtener las seleccionadas por la linea de tiempo
   initCrossfilterNumMedia(newsSelected);//cuenta los medios involucrados
   $( "#numNews" ).html(numNews);//actualiza el numero de noticias relacionadas del widget
   $( "#numMedia" ).html(mediaNumDimensionGrouping.length);//actualiza el numero de medios Relacionados del widget
+  initCrossfilterNumLocations(newsSelected);//cuento cant de localidades
+  var numLoc=locNumDimensionGrouping.length;
+  $( "#numLoc" ).html(numLoc+"&nbsplocalidades relacionadas");
 }
 
 function updateDates(){
    var fechaFin=String(format.parse(newsMap[startSelecDate]._source.date.substr(0,10)));
    var fechaIni=String(format.parse(newsMap[finSelecDate]._source.date.substr(0,10)));
    if(fechaFin==fechaIni){//si es que es un solo dia
-      var dateIndic=" ("+fechaIni.substr(0,10)+")"
+      var dateIndic=" ("+fechaIni.substr(0,15)+")";
       $( "#dateIndic" ).html(dateIndic);
    }else{//si es que es un rango de fecha
-    var dateIndic=" ("+fechaIni.substr(0,10)+" - "+fechaFin.substr(0,10)+")";
+    var dateIndic=" ("+fechaIni.substr(0,15)+" - "+fechaFin.substr(0,15)+")";
       $( "#dateIndic" ).html(dateIndic);
    }
   var date=startSelecDate+"-"+finSelecDate;
@@ -320,23 +333,6 @@ function modal(news){
   })
 }
 /*------------------stacked bar chart----------------------------------------------------------------------*/
-/*cuenta cuantas noticias por medio se realizan al dia*/
-function initCrossfilterMedia() {
-  filterMedia = crossfilter(newsMap);
-
-  // simple dimensions and groupings for major variables
-  mediaDimension = filterMedia.dimension(
-      function(p) {
-        //var data={date:format.parse(p._source.date.substr(0,10)),mediaSource:p._source.screen_name};
-        return "date="+format.parse(p._source.date.substr(0,10))+";mediaSource="+p._source.screen_name;
-      });
-  mediaDimensionGrouping = mediaDimension.group().reduceCount(
-      function(p) {
-        return p;
-      }).all();
-}
-initCrossfilterMedia();
-
 /*cuenta cuantos medios estan involucrados en la noticia*/
 function initCrossfilterNumMedia(news) {
   filterMedia = crossfilter(news);
@@ -351,31 +347,17 @@ function initCrossfilterNumMedia(news) {
         return p;
       }).all();
 }
-//initCrossfilterNumMedia(newsSelected);
 
-/*
-var cf = crossfilter([
-{ date:"1 jan 2014", author: "Mr X", book: "Book 1" },
-{ date:"2 jan 2014", author: "Mr X", book: "Book 2" },
-{ date:"3 feb 2014", author: "Mr X", book: "Book 3" },
-{ date:"1 mar 2014", author: "Mr X", book: "Book 4" },
-{ date:"2 apr 2014", author: "Mr X", book: "Book 5" },
-{ date:"3 apr 2014", author: "Mr X", book: "Book 6"},
-{ date:"1 jan 2014", author: "Ms Y", book: "Book 7" },
-{ date:"2 jan 2014", author: "Ms Y", book: "Book 8" },
-{ date:"3 jan 2014", author: "Ms Y", book: "Book 9" },
-{ date:"1 mar 2014", author: "Ms Y", book: "Book 10" },
-{ date:"2 mar 2014", author: "Ms Y", book: "Book 11" },
-{ date:"3 mar 2014", author: "Ms Y", book: "Book 12" },
-{ date:"4 apr 2014", author: "Ms Y", book: "Book 13" }
-]);  
+function initCrossfilterNumLocations(news) {
+  filterMedia = crossfilter(news);
 
-var dimensionMonthAuthor = cf.dimension(function (d) {
-  var thisDate = new Date(d.date);
-  return 'month='+thisDate.getMonth()+';author='+d.author;
-});
-
-
-var monthAuthorCount = dimensionMonthAuthor.group().reduceCount(function (d) { 
-  return d.book; }).all();
-*/
+  // simple dimensions and groupings for major variables
+  locNumDimension = filterMedia.dimension(
+      function(p) {
+        return p._source.countrylocation;
+      });
+  locNumDimensionGrouping =locNumDimension.group().reduceCount(
+      function(p) {
+        return p;
+      }).all();
+}

@@ -29,48 +29,8 @@
         {{'"'+busqueda+'"'+dateIndic}}
     </div>
 <!---------------------------------------------------------------------------------------------------->
-    <div class="container">
-        <div class="row">
-        {% set id=0 %}
-        {% for i in news %}
-            <div class="col-lg-4 col-md-4 col-xs-6 thumb">
-                <a class="thumbnail" id={{id}} onclick='var newsClicked=({{news[id]._source|tojson|safe}});modal(newsClicked);'>
-                    <p class="newsDate">{{i._source.date}}</p>
-                    <p class="newsTopic">{{i._source.topic}}</p>
-                    <img class="img-responsive" src="http://lorempixel.com/400/200/" alt="">
-                    <p class="newsMedia">{{i._source.screen_name}}</p>                    
-                    <p class="capitalize">{{i._source.title}}</p>  
-                </a>
-            </div>
-            {% set id=id+1 %}
-        {% endfor %}
-        </div>
-    </div>
-<!---------------------------------------------------------------------------------------------------->
-    <!-- Modal -->
-    <div class="modal  modal-wide fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h2 class="modal-title" id="modalTitle"></h2>
-                    <p id="modalDate"></p>
-                    <p id="modalTopic"></p>
-                </div>
-                <div class="modal-body">
-                    <div id="newsText"></div>
-                    <!-- <img class="newsImage" src="http://lorempixel.com/400/200/" alt=""> -->
-                    <div id="word">
-                        <div id="newsWordCloud"></div>
-                    </div>
-                    <div id="newsMap"></div> 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
+    <div id="container">
+        <script type="text/javascript">var newsMedia=({{news|tojson|safe}});</script>
     </div>
 <!---------------------------------------------------------------------------------------------------->
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -83,7 +43,9 @@
         <script src="{{url_for('static',filename='js/d3.v3.min.js')}}"></script>
         <script src="{{url_for('static',filename='js/crossfilter.v1.min.js')}}"></script>
         <script src="{{url_for('static',filename='js/jqcloud.js')}}"></script>
-        <script src="{{url_for('static',filename='js/myFunctions.js')}}"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="{{url_for('static',filename='js/myFunctionsMedia.js')}}"></script>
     </body>
 <!---------------------------------------------------------------------------------------------------->
 </html>
